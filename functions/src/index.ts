@@ -56,9 +56,11 @@ export const updateGoldPrice = functions
         !latestGoldPrice ||
         latestGoldPrice.announcedAt !== currentThaiGoldPrice.announcedAt
       ) {
-        const goldPriceHistory = admin.database().ref('thaiGoldPrice/history');
+        const goldPriceHistory = admin
+          .database()
+          .ref(`thaiGoldPrice/history/${currentThaiGoldPrice.announcedAt}`);
         await latestGoldPriceRef.set(currentThaiGoldPrice);
-        await goldPriceHistory.push(currentThaiGoldPrice);
+        await goldPriceHistory.set(currentThaiGoldPrice);
         functions.logger.info(
           'Gold price data has been updated.',
           currentThaiGoldPrice,
