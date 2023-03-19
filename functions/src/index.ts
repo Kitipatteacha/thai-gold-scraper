@@ -4,7 +4,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import {
   convertGoldPriceStringToNumber,
-  extractRawUpdatedTimeString,
+  extractRawUpdatedDateTimeString,
 } from './utils';
 
 admin.initializeApp();
@@ -35,7 +35,7 @@ const scrapeThaiGoldPrice = async () => {
     '#DetailPlace_uc_goldprices1_lblAsTime',
   ).text();
 
-  const thaiDateTimeString = extractRawUpdatedTimeString(
+  const thaiDateTimeString = extractRawUpdatedDateTimeString(
     rawUpdatedDateTimeString,
   );
   return {
