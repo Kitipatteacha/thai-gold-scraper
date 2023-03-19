@@ -1,10 +1,8 @@
-export const extractRawUpdatedDateTimeString = (
-  updatedDateTimeString: string,
-) => {
-  // Ex. updatedDateTimeString format: ประจำวันที่ 18/03/2566 เวลา 09:15 น. (ครั้งที่ 1)
+export const getAnnouncedDateFromRawString = (rawString: string) => {
+  // Ex. rawString format: ประจำวันที่ 18/03/2566 เวลา 09:15 น. (ครั้งที่ 1)
 
   // Split the string into an array of substrings
-  const parts = updatedDateTimeString.split(' ');
+  const parts = rawString.split(' ');
 
   // Extract the date, month, and year from the first substring
   const [day, month, year] = parts[0].split('/');
@@ -13,11 +11,11 @@ export const extractRawUpdatedDateTimeString = (
   const time = parts[2];
 
   // Combine the date and time into a new string
-  const thaiDatetimeString = `${day}-${month}-${year} ${time}`;
-  return thaiDatetimeString;
+  const announcedAt = `${day}-${month}-${year} ${time}`;
+  return announcedAt;
 };
 
-export const convertGoldPriceStringToNumber = (goldPriceString: string) => {
-  const number = Number(goldPriceString.replace(/,/g, ''));
+export const convertStringToNumber = (str: string) => {
+  const number = Number(str.replace(/,/g, ''));
   return number;
 };

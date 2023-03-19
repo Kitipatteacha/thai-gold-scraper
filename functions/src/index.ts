@@ -2,10 +2,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import {
-  convertGoldPriceStringToNumber,
-  extractRawUpdatedDateTimeString,
-} from './utils';
+import { convertStringToNumber, getAnnouncedDateFromRawString } from './utils';
 
 admin.initializeApp();
 
@@ -15,35 +12,32 @@ const scrapeThaiGoldPrice = async () => {
 
   const $ = cheerio.load(html);
 
-  const goldBarSell = convertGoldPriceStringToNumber(
+  const goldBarSell = convertStringToNumber(
     $('#DetailPlace_uc_goldprices1_lblBLSell').text(),
   );
 
-  const goldBarBuy = convertGoldPriceStringToNumber(
+  const goldBarBuy = convertStringToNumber(
     $('#DetailPlace_uc_goldprices1_lblBLBuy').text(),
   );
 
-  const goldOrnamentSell = convertGoldPriceStringToNumber(
+  const goldOrnamentSell = convertStringToNumber(
     $('#DetailPlace_uc_goldprices1_lblOMSell').text(),
   );
 
-  const goldOrnamentBuy = convertGoldPriceStringToNumber(
+  const goldOrnamentBuy = convertStringToNumber(
     $('#DetailPlace_uc_goldprices1_lblOMBuy').text(),
   );
 
-  const rawUpdatedDateTimeString = $(
-    '#DetailPlace_uc_goldprices1_lblAsTime',
-  ).text();
-
-  const thaiDateTimeString = extractRawUpdatedDateTimeString(
-    rawUpdatedDateTimeString,
+  const announcedAt = getAnnouncedDateFromRawString(
+    $('#DetailPlace_uc_goldprices1_lblAsTime').text(),
   );
+
   return {
     goldBarSell,
     goldBarBuy,
     goldOrnamentSell,
     goldOrnamentBuy,
-    thaiDateTimeString,
+    announcedAt,
   };
 };
 
@@ -60,11 +54,7 @@ export const updateGoldPrice = functions
 
       if (
         !latestGoldPrice ||
-        latestGoldPrice.goldBarSell !== currentThaiGoldPrice.goldBarSell ||
-        latestGoldPrice.goldBarBuy !== currentThaiGoldPrice.goldBarBuy ||
-        latestGoldPrice.goldOrnamentSell !==
-          currentThaiGoldPrice.goldOrnamentSell ||
-        latestGoldPrice.goldOrnamentBuy !== currentThaiGoldPrice.goldOrnamentBuy
+        latestGoldPrice.announcedAt !== currentThaiGoldPrice.announcedAt
       ) {
         const goldPriceHistory = admin.database().ref('thaiGoldPrice/history');
         await latestGoldPriceRef.set(currentThaiGoldPrice);
